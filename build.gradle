@@ -1,0 +1,42 @@
+plugins {
+    id 'java'
+}
+
+group 'org.example'
+version '1'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+    // https://mvnrepository.com/artifact/com.google.code.gson/gson
+    implementation 'com.google.code.gson:gson:2.10.1'
+
+}
+
+test {
+    useJUnitPlatform()
+}
+jar {
+    manifest {
+        attributes 'Main-Class': 'javadevhw1gradle.StartClass'
+    }
+    from configurations.compileClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+}
+
+tasks.register('renameFile', Copy) {
+    from 'build/libs/JavaDevHW1Gradle-1.jar'
+    into 'build/libs'
+    rename 'JavaDevHW1Gradle-1.jar', 'myname.jar'
+}
+tasks.register('deleteFile', Delete) {
+    delete fileTree("build/libs").matching { include "JavaDevHW1Gradle-1.jar" }
+}
+
+renameFile.finalizedBy(deleteFile)
+
+
+jar.finalizedBy(renameFile)
